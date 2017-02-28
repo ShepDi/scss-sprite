@@ -1,0 +1,57 @@
+$scssSpriteConfig: (
+  src: './sprite.png',
+  width: 1000,
+  height: 1000,
+  unit: px
+);
+
+@function scssSpriteUnit($value) {
+ @return $value + map-get($scssSpriteConfig, unit);
+}
+
+@mixin scssSpriteBackgroundSize($spriteResolution, $imageResolution) {
+  $spriteW: nth($spriteResolution, 1);
+  $spriteH: nth($spriteResolution, 2);
+  $imageW: nth($imageResolution, 1);
+  $imageH: nth($imageResolution, 2);
+
+  $x: $spriteW / $imageW * 100%;
+  $y: $spriteH / $imageH * 100%;
+
+  background-size: $x $y;
+}
+
+@mixin scssSpriteBackgroundPosition($spriteResolution, $imageResolution, $imagePosition) {
+  $spriteW: nth($spriteResolution, 1);
+  $spriteH: nth($spriteResolution, 2);
+  $imageW: nth($imageResolution, 1);
+  $imageH: nth($imageResolution, 2);
+  $imageX: nth($imagePosition, 1);
+  $imageY: nth($imagePosition, 2);
+
+  $x: $imageX / $spriteW;
+  $y: $imageY / $spriteH;
+
+  // Specific of background-position
+  @for $i from 1 through 10 {
+    $x: ($imageX + $imageW * $x) / $spriteW;
+    $y: ($imageY + $imageH * $y) / $spriteH;
+  }
+
+  $x: $x * 100%;
+  $y: $y * 100%;
+
+  background-position: $x $y;
+}
+
+@mixin scssSprite($x, $y, $w, $h, $setSize: true, $setBackground: true) {
+  @if $setBackground == true {
+    background-image: url(map-get($scssSpriteConfig, src));
+  }
+  @include scssSpriteBackgroundSize((map-get($scssSpriteConfig, width), map-get($scssSpriteConfig, height)), ($w, $h));
+  @include scssSpriteBackgroundPosition((map-get($scssSpriteConfig, width), map-get($scssSpriteConfig, height)), ($w, $h), ($x, $y));
+  @if $setSize == true {
+    width: scssSpriteUnit($w);
+    height: scssSpriteUnit($h);
+  }
+}
